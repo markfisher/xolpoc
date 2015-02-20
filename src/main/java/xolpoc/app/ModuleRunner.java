@@ -58,10 +58,9 @@ public class ModuleRunner {
 				.child(DeployerConfiguration.class)
 				.run(args);
 
-		// todo: provide these as args if supported on lattice
-		String streamName = "test";
-		String moduleName = "time";
-		ModuleType moduleType = ModuleType.source;
+		String streamName = System.getProperty("stream.name", "test");
+		String moduleName = System.getProperty("module.name", "time");
+		ModuleType moduleType = ModuleType.valueOf(System.getProperty("module.type", "source"));
 
 		// todo: figure out why this is not working when defined as a bean (resourceLoader?)
 		ModuleRegistry registry = new ResourceModuleRegistry("META-INF/modules");
@@ -70,7 +69,7 @@ public class ModuleRunner {
 		ModuleDescriptor descriptor = new ModuleDescriptor.Builder()
 				.setModuleDefinition(definition)
 				.setGroup(streamName)
-				.setIndex(0)
+				.setIndex((moduleType == ModuleType.source) ? 0 : 1)
 				.build();
 		ModuleDeployer deployer = context.getBean(ModuleDeployer.class);
 		ModuleDeploymentProperties deploymentProperties = new ModuleDeploymentProperties();
