@@ -25,7 +25,6 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.xd.dirt.integration.bus.MessageBus;
 import org.springframework.xd.dirt.module.ModuleDeployer;
 import org.springframework.xd.dirt.module.ModuleRegistry;
-import org.springframework.xd.dirt.module.ResourceModuleRegistry;
 import org.springframework.xd.module.ModuleDefinition;
 import org.springframework.xd.module.ModuleDeploymentProperties;
 import org.springframework.xd.module.ModuleDescriptor;
@@ -62,12 +61,12 @@ public class ModuleRunner {
 		String moduleName = System.getProperty("module.name", "time");
 		ModuleType moduleType = ModuleType.valueOf(System.getProperty("module.type", "source"));
 
-		// todo: figure out why this is not working when defined as a bean (resourceLoader?)
-		ModuleRegistry registry = new ResourceModuleRegistry("META-INF/modules");
-
+		ModuleRegistry registry = context.getBean(ModuleRegistry.class);
 		ModuleDefinition definition = registry.findDefinition(moduleName, moduleType);
 		ModuleDescriptor descriptor = new ModuleDescriptor.Builder()
 				.setModuleDefinition(definition)
+				.setModuleName(moduleName)
+				.setType(moduleType)
 				.setGroup(streamName)
 				.setIndex((moduleType == ModuleType.source) ? 0 : 1)
 				.build();
