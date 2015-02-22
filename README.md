@@ -1,8 +1,10 @@
-XD on Lattice PoC
+# XD on Lattice PoC
 
-1. clone this repo.
+## Quick Start
 
-2. copy modules to */opt/xd/modules*:
+1: clone this repository
+
+2: copy modules to */opt/xd/modules*:
 
 ````
 opt
@@ -13,16 +15,18 @@ opt
         └── source
 ````
 
-3. build the jar (from root of repo):
+3: build the jar (from the repository root):
 
 ````
 ./gradlew clean build
 ````
 
-4. run (at least one needs to have an explicit server.port to avoid conflicts on the default, which is 8080):
+4: deploy a "stream" by running 2 modules, e.g. `time | log`:
 
 ````
 $ cd build/libs/
 $ java -Dmodule=ticktock.sink.log.1 -jar xolpoc-0.0.1-SNAPSHOT.jar
 $ java -Dmodule=ticktock.source.time.0 -Dserver.port=8081 -jar xolpoc-0.0.1-SNAPSHOT.jar
 ````
+
+**NOTE: at least one of the module processes needs to have an explicit `server.port` property, as shown above, to avoid conflicts on the default (8080)**
