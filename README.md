@@ -1,6 +1,6 @@
 # XD on Lattice PoC
 
-The following examples demonstrate running the /ticktock/ stream (`time | log`). First, we show how to run them as standalone modules. Next, we show how to run each module as an independently scalable app (LRP) on Lattice.
+The following examples demonstrate running the *ticktock* stream (`time | log`). First, we show how to run them as standalone modules. Next, we show how to run each module as an independently scalable app (LRP) on Lattice.
 
 ## Running Standalone
 
@@ -23,7 +23,7 @@ opt
 ./gradlew clean build
 ````
 
-4: deploy the /ticktock/ stream:
+4: deploy the *ticktock* stream:
 
 ````
 $ cd build/libs/
