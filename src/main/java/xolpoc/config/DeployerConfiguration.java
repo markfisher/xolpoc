@@ -32,9 +32,6 @@ import org.springframework.xd.module.options.DelegatingModuleOptionsMetadataReso
 import org.springframework.xd.module.options.EnvironmentAwareModuleOptionsMetadataResolver;
 import org.springframework.xd.module.options.ModuleOptionsMetadataResolver;
 
-import xolpoc.support.TempModuleFactory;
-import xolpoc.support.TempResourceModuleRegistry;
-
 /**
  * Instantiates the components required for loading and deploying Modules.
  *
@@ -44,7 +41,7 @@ import xolpoc.support.TempResourceModuleRegistry;
 @EnableAutoConfiguration
 public class DeployerConfiguration {
 
-	private static final String MODULE_HOME = "classpath*:/META-INF/modules";
+	private static final String MODULE_HOME = "file:/opt/xd/modules";
 
 	@Bean
 	public ModuleDeployer moduleDeployer() {
@@ -53,12 +50,12 @@ public class DeployerConfiguration {
 
 	@Bean
 	public ResourceModuleRegistry moduleRegistry() {
-		return new TempResourceModuleRegistry(MODULE_HOME);
+		return new ResourceModuleRegistry(MODULE_HOME);
 	}
 
 	@Bean
 	public ModuleFactory moduleFactory() {
-		return new TempModuleFactory(moduleOptionsMetadataResolver());
+		return new ModuleFactory(moduleOptionsMetadataResolver());
 	}
 
 	@Bean

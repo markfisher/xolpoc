@@ -22,6 +22,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.util.Assert;
 import org.springframework.xd.dirt.integration.bus.MessageBus;
 import org.springframework.xd.dirt.module.ModuleDeployer;
 import org.springframework.xd.dirt.module.ModuleRegistry;
@@ -57,9 +58,13 @@ public class ModuleRunner {
 				.child(DeployerConfiguration.class)
 				.run(args);
 
-		String streamName = System.getProperty("stream.name", "test");
-		String moduleName = System.getProperty("module.name", "time");
-		ModuleType moduleType = ModuleType.valueOf(System.getProperty("module.type", "source"));
+		String moduleProperty = System.getProperty("module", "ticktock.source.time.0");
+		String[] tokens = moduleProperty.split("\\.");
+		Assert.isTrue(tokens.length == 4, "required module property format: -Dmodule=streamname.moduletype.modulename.moduleindex");
+		String streamName = tokens[0];
+		ModuleType moduleType = ModuleType.valueOf(tokens[1]);
+		String moduleName = tokens[2];
+		int moduleIndex = Integer.parseInt(tokens[3]);
 
 		ModuleRegistry registry = context.getBean(ModuleRegistry.class);
 		ModuleDefinition definition = registry.findDefinition(moduleName, moduleType);
@@ -68,7 +73,7 @@ public class ModuleRunner {
 				.setModuleName(moduleName)
 				.setType(moduleType)
 				.setGroup(streamName)
-				.setIndex((moduleType == ModuleType.source) ? 0 : 1)
+				.setIndex(moduleIndex)
 				.build();
 		ModuleDeployer deployer = context.getBean(ModuleDeployer.class);
 		ModuleDeploymentProperties deploymentProperties = new ModuleDeploymentProperties();
