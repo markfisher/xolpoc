@@ -19,11 +19,10 @@ opt
 ./gradlew clean build
 ````
 
-3. run (at least one needs to have an explicit server.port to avoid conflicts on the default, which is 8080):
+4. run (at least one needs to have an explicit server.port to avoid conflicts on the default, which is 8080):
 
 ````
 $ cd build/libs/
 $ java -Dmodule=ticktock.sink.log.1 -jar xolpoc-0.0.1-SNAPSHOT.jar
 $ java -Dmodule=ticktock.source.time.0 -Dserver.port=8081 -jar xolpoc-0.0.1-SNAPSHOT.jar
 ````
-
