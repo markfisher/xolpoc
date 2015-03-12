@@ -19,9 +19,11 @@ package xolpoc.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 import org.springframework.xd.dirt.module.ModuleDeployer;
 import org.springframework.xd.dirt.module.ResourceModuleRegistry;
 import org.springframework.xd.dirt.plugins.job.JobPluginMetadataResolver;
@@ -41,7 +43,8 @@ import org.springframework.xd.module.options.ModuleOptionsMetadataResolver;
 @EnableAutoConfiguration
 public class DeployerConfiguration {
 
-	private static final String MODULE_HOME = "file:/opt/xd/modules";
+	@Value("${xd.modules.location}")
+	private String moduleHome;
 
 	@Bean
 	public ModuleDeployer moduleDeployer() {
@@ -50,7 +53,8 @@ public class DeployerConfiguration {
 
 	@Bean
 	public ResourceModuleRegistry moduleRegistry() {
-		return new ResourceModuleRegistry(MODULE_HOME);
+		Assert.hasText(moduleHome);
+		return new ResourceModuleRegistry(moduleHome);
 	}
 
 	@Bean
