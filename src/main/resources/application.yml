@@ -11,6 +11,13 @@ spring:
 
 xd:
   messagebus:
+    local:
+      polling:                     1000
+      executor:
+        corePoolSize:              0
+        maxPoolSize:               200
+#       queueSize:                 # defaults to Integer.MAX_VALUE
+        keepAliveSeconds:          60
     redis:
       headers:
         # comma-delimited list of additional (string-valued) header names to transport

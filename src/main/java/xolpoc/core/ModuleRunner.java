@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-package xolpoc.app;
+package xolpoc.core;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ImportResource;
+import java.util.Properties;
+
 import org.springframework.util.Assert;
-import org.springframework.xd.dirt.integration.bus.MessageBus;
 import org.springframework.xd.dirt.module.ModuleDeployer;
 import org.springframework.xd.dirt.module.ModuleRegistry;
 import org.springframework.xd.module.ModuleDefinition;
@@ -31,59 +26,53 @@ import org.springframework.xd.module.ModuleDeploymentProperties;
 import org.springframework.xd.module.ModuleDescriptor;
 import org.springframework.xd.module.ModuleType;
 import org.springframework.xd.module.core.Module;
-import org.springframework.xd.module.core.Plugin;
-
-import xolpoc.config.DeployerConfiguration;
-import xolpoc.config.EmptyConfiguration;
-import xolpoc.plugins.StreamPlugin;
 
 /**
- * Main method for running a single Module as a self-contained application.
- *
  * @author Mark Fisher
  */
-@SpringBootApplication
-@ImportResource({"classpath*:/META-INF/spring-xd/bus/*.xml"})
 public class ModuleRunner {
 
-	@Autowired
-	private MessageBus messageBus;
+	private final ModuleRegistry registry;
 
-	public static void main(String[] args) throws InterruptedException {
-		System.setProperty("xd.config.home", "META-INF");
-		ConfigurableApplicationContext context = new SpringApplicationBuilder()
-				.sources(EmptyConfiguration.class) // this hierarchical depth is expected
-				.child(EmptyConfiguration.class) // so these 2 levels satisfy an assertion (temporary)
-				.child(ModuleRunner.class)
-				.child(DeployerConfiguration.class)
-				.run(args);
+	private final ModuleDeployer deployer;
 
-		String moduleProperty = System.getProperty("module", "ticktock.source.time.0");
-		String[] tokens = moduleProperty.split("\\.");
+	public ModuleRunner(ModuleRegistry registry, ModuleDeployer deployer) {
+		Assert.notNull(registry, "ModuleRegistry must not be null");
+		Assert.notNull(deployer, "ModuleDeployer must not be null");
+		this.registry = registry;
+		this.deployer = deployer;
+	}
+
+	public void run(String modulePath, Properties moduleOptions) {
+		deploy(descriptorFor(modulePath, moduleOptions));
+	}
+
+	private ModuleDescriptor descriptorFor(String modulePath, Properties options) {
+		String[] tokens = modulePath.split("\\.");
 		Assert.isTrue(tokens.length == 4, "required module property format: -Dmodule=streamname.moduletype.modulename.moduleindex");
 		String streamName = tokens[0];
 		ModuleType moduleType = ModuleType.valueOf(tokens[1]);
 		String moduleName = tokens[2];
 		int moduleIndex = Integer.parseInt(tokens[3]);
 
-		ModuleRegistry registry = context.getBean(ModuleRegistry.class);
 		ModuleDefinition definition = registry.findDefinition(moduleName, moduleType);
-		ModuleDescriptor descriptor = new ModuleDescriptor.Builder()
+
+		ModuleDescriptor.Builder builder = new ModuleDescriptor.Builder()
 				.setModuleDefinition(definition)
 				.setModuleName(moduleName)
 				.setType(moduleType)
 				.setGroup(streamName)
-				.setIndex(moduleIndex)
-				.build();
-		ModuleDeployer deployer = context.getBean(ModuleDeployer.class);
+				.setIndex(moduleIndex);
+		for (String key : options.stringPropertyNames()) {
+			builder.setParameter(key, options.getProperty(key));
+		}
+		return builder.build();
+	}
+
+	private void deploy(ModuleDescriptor descriptor) {
 		ModuleDeploymentProperties deploymentProperties = new ModuleDeploymentProperties();
 		Module module = deployer.createModule(descriptor, deploymentProperties);
 		deployer.deploy(module, descriptor);
-	}
-
-	@Bean
-	public Plugin streamPlugin() {
-		return new StreamPlugin(messageBus);
 	}
 
 }
