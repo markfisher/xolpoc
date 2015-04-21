@@ -43,13 +43,13 @@ public class ModuleRunner {
 		this.deployer = deployer;
 	}
 
-	public void run(String modulePath, Properties moduleOptions) {
-		deploy(descriptorFor(modulePath, moduleOptions));
+	public void run(String moduleDefinition, Properties moduleOptions, ModuleDeploymentProperties deploymentProperties) {
+		deploy(descriptorFor(moduleDefinition, moduleOptions), deploymentProperties);
 	}
 
-	private ModuleDescriptor descriptorFor(String modulePath, Properties options) {
-		String[] tokens = modulePath.split("\\.");
-		Assert.isTrue(tokens.length == 4, "required module property format: -Dmodule=streamname.moduletype.modulename.moduleindex");
+	private ModuleDescriptor descriptorFor(String moduleDefinition, Properties options) {
+		String[] tokens = moduleDefinition.split("\\.");
+		Assert.isTrue(tokens.length == 4, "required module property format: streamname.moduletype.modulename.moduleindex");
 		String streamName = tokens[0];
 		ModuleType moduleType = ModuleType.valueOf(tokens[1]);
 		String moduleName = tokens[2];
@@ -69,8 +69,7 @@ public class ModuleRunner {
 		return builder.build();
 	}
 
-	private void deploy(ModuleDescriptor descriptor) {
-		ModuleDeploymentProperties deploymentProperties = new ModuleDeploymentProperties();
+	private void deploy(ModuleDescriptor descriptor, ModuleDeploymentProperties deploymentProperties) {
 		Module module = deployer.createModule(descriptor, deploymentProperties);
 		deployer.deploy(module, descriptor);
 	}

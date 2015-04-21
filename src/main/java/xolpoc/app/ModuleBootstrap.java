@@ -27,6 +27,7 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.xd.dirt.integration.bus.MessageBus;
 import org.springframework.xd.dirt.module.ModuleDeployer;
 import org.springframework.xd.dirt.module.ModuleRegistry;
+import org.springframework.xd.module.ModuleDeploymentProperties;
 import org.springframework.xd.module.core.Plugin;
 
 import xolpoc.config.DeployerConfiguration;
@@ -47,6 +48,8 @@ public class ModuleBootstrap {
 
 	private static final String OPTION_PROPERTY_PREFIX = "option.";
 
+	private static final String DEPLOYMENT_PROPERTY_PREFIX = "property.";
+
 	@Autowired
 	private MessageBus messageBus;
 
@@ -59,15 +62,20 @@ public class ModuleBootstrap {
 				.child(DeployerConfiguration.class)
 				.run(args);
 		ModuleRunner runner = new ModuleRunner(context.getBean(ModuleRegistry.class), context.getBean(ModuleDeployer.class));
-		String moduleProperty = System.getProperty("module", "ticktock.source.time.0");
-		Properties options = new Properties();
+		String moduleDefinition = System.getProperty("module", "ticktock.source.time.0");
+		Properties moduleOptions = new Properties();
+		ModuleDeploymentProperties deploymentProperties = new ModuleDeploymentProperties();
 		for (String propertyName : System.getProperties().stringPropertyNames()) {
 			if (propertyName.startsWith(OPTION_PROPERTY_PREFIX)) {
 				String key = propertyName.substring(OPTION_PROPERTY_PREFIX.length());
-				options.setProperty(key, System.getProperty(OPTION_PROPERTY_PREFIX + key));
+				moduleOptions.setProperty(key, System.getProperty(OPTION_PROPERTY_PREFIX + key));
+			}
+			else if (propertyName.startsWith(DEPLOYMENT_PROPERTY_PREFIX)) {
+				String key = propertyName.substring(DEPLOYMENT_PROPERTY_PREFIX.length());
+				deploymentProperties.put(key, System.getProperty(DEPLOYMENT_PROPERTY_PREFIX + key));
 			}
 		}
-		runner.run(moduleProperty, options);
+		runner.run(moduleDefinition, moduleOptions, deploymentProperties);
 	}
 
 	@Bean
