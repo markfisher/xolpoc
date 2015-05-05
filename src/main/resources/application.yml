@@ -28,3 +28,11 @@ xd:
         backOffMultiplier:         2.0
         concurrency:               1
         maxAttempts:               3
+---
+xd:
+  analytics:
+    redis:
+      backOffInitialInterval:    1000
+      backOffMaxInterval:        10000
+      backOffMultiplier:         2.0
+      maxAttempts:               5

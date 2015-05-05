@@ -32,6 +32,7 @@ import org.springframework.xd.module.core.Plugin;
 
 import xolpoc.config.DeployerConfiguration;
 import xolpoc.config.EmptyConfiguration;
+import xolpoc.config.ServiceConfiguration;
 import xolpoc.core.ModuleRunner;
 import xolpoc.plugins.StreamPlugin;
 
@@ -57,12 +58,12 @@ public class ModuleBootstrap {
 		System.setProperty("xd.config.home", "META-INF");
 		ConfigurableApplicationContext context = new SpringApplicationBuilder()
 				.sources(EmptyConfiguration.class) // this hierarchical depth is expected
-				.child(EmptyConfiguration.class) // so these 2 levels satisfy an assertion (temporary)
+				.child(ServiceConfiguration.class) // so these 2 levels satisfy an assertion (temporary)
 				.child(ModuleBootstrap.class)
 				.child(DeployerConfiguration.class)
 				.run(args);
+		String moduleDefinition = context.getEnvironment().getProperty("module", "ticktock.source.time.0");
 		ModuleRunner runner = new ModuleRunner(context.getBean(ModuleRegistry.class), context.getBean(ModuleDeployer.class));
-		String moduleDefinition = System.getProperty("module", "ticktock.source.time.0");
 		Properties moduleOptions = new Properties();
 		ModuleDeploymentProperties deploymentProperties = new ModuleDeploymentProperties();
 		for (String propertyName : System.getProperties().stringPropertyNames()) {
@@ -82,5 +83,4 @@ public class ModuleBootstrap {
 	public Plugin streamPlugin() {
 		return new StreamPlugin(messageBus);
 	}
-
 }
