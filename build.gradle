@@ -23,7 +23,8 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-	maven { url "http://repo.spring.io/plugins-release" }
+	mavenLocal()
+	maven { url "http://repo.spring.io/plugins-snapshot" }
 }
 
 dependencies {
@@ -34,10 +35,12 @@ dependencies {
 		exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
 	}
 	compile("org.springframework.boot:spring-boot-starter-log4j")
-	compile("org.springframework.xd:spring-xd-messagebus-redis:1.1.1.RELEASE")
-	compile("org.springframework.xd:spring-xd-dirt:1.1.1.RELEASE") {
+	compile("org.springframework.xd:spring-xd-messagebus-redis:1.2.0.BUILD-SNAPSHOT")
+	compile("org.springframework.xd:spring-xd-messagebus-rabbit:1.2.0.BUILD-SNAPSHOT")
+	compile("org.springframework.xd:spring-xd-dirt:1.2.0.BUILD-SNAPSHOT") {
 		exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
 	}
+	compile("org.springframework.cloud:spring-cloud-lattice-connector:1.0.2.BUILD-SNAPSHOT")
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 

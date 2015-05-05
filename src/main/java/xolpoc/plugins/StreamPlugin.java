@@ -146,8 +146,7 @@ public class StreamPlugin extends AbstractStreamPlugin {
 
 	private boolean isChannelPubSub(String channelName) {
 		Assert.isTrue(StringUtils.hasText(channelName), "Channel name should not be empty/null.");
-		// Check if the channelName starts with tap: or topic:
-		return (channelName.startsWith(TAP_CHANNEL_PREFIX) || channelName.startsWith(TOPIC_CHANNEL_PREFIX));
+		return (channelName.startsWith("tap:") || channelName.startsWith("topic:"));
 	}
 
 	/**
