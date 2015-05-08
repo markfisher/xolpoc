@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
 /**
  * Bind to services if running in a Lattice environment.
@@ -43,5 +44,11 @@ public class ServiceConfiguration {
 		RedisConnectionFactory redisConnectionFactory() {
 			return connectionFactory().redisConnectionFactory();
 		}
+	}
+
+	@Bean
+	@ConditionalOnProperty(value="PROCESS_GUID", matchIfMissing=true)
+	public RedisConnectionFactory redisConnectionFactory() {
+		return new JedisConnectionFactory();
 	}
 }
