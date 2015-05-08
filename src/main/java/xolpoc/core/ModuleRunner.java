@@ -63,6 +63,12 @@ public class ModuleRunner {
 				.setType(moduleType)
 				.setGroup(streamName)
 				.setIndex(moduleIndex);
+		if (System.getProperties().containsKey("input")) {
+			builder.setSourceChannelName(System.getProperty("input"));
+		}
+		if (System.getProperties().containsKey("output")) {
+			builder.setSinkChannelName(System.getProperty("output"));
+		}
 		for (String key : options.stringPropertyNames()) {
 			builder.setParameter(key, options.getProperty(key));
 		}
