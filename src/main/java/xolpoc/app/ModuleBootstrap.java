@@ -62,8 +62,8 @@ public class ModuleBootstrap {
 				.child(ModuleBootstrap.class)
 				.child(DeployerConfiguration.class)
 				.run(args);
+		String moduleDefinition = context.getEnvironment().getProperty("module", "ticktock.source.time.0");
 		ModuleRunner runner = new ModuleRunner(context.getBean(ModuleRegistry.class), context.getBean(ModuleDeployer.class));
-		String moduleDefinition = System.getProperty("module", "ticktock.source.time.0");
 		Properties moduleOptions = new Properties();
 		ModuleDeploymentProperties deploymentProperties = new ModuleDeploymentProperties();
 		for (String propertyName : System.getProperties().stringPropertyNames()) {

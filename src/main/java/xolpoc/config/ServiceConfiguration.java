@@ -37,7 +37,7 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 public class ServiceConfiguration {
 
 	@Configuration
-	@ConditionalOnProperty("PROCESS_GUID")
+	//@ConditionalOnProperty("PROCESS_GUID")
 	protected static class LatticeConfig extends AbstractCloudConfig {
 
 		@Bean
@@ -46,9 +46,10 @@ public class ServiceConfiguration {
 		}
 	}
 
-	@Bean
-	@ConditionalOnProperty(value="PROCESS_GUID", matchIfMissing=true)
-	public RedisConnectionFactory redisConnectionFactory() {
-		return new JedisConnectionFactory();
-	}
+//	@Bean
+//	@ConditionalOnProperty(value="PROCESS_GUID", matchIfMissing=true)
+//	public RedisConnectionFactory redisConnectionFactory() {
+//		System.out.println("@@@@@@@ Binding to Redis locally");
+//		return new JedisConnectionFactory();
+//	}
 }
