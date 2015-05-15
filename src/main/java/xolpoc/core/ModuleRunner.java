@@ -36,20 +36,29 @@ public class ModuleRunner {
 
 	private final ModuleDeployer deployer;
 
-	public ModuleRunner(ModuleRegistry registry, ModuleDeployer deployer) {
+	private final String input;
+
+	private final String output;
+
+	public ModuleRunner(ModuleRegistry registry, ModuleDeployer deployer, String input,
+			String output) {
 		Assert.notNull(registry, "ModuleRegistry must not be null");
 		Assert.notNull(deployer, "ModuleDeployer must not be null");
+		this.input = input;
+		this.output = output;
 		this.registry = registry;
 		this.deployer = deployer;
 	}
 
-	public void run(String moduleDefinition, Properties moduleOptions, ModuleDeploymentProperties deploymentProperties) {
+	public void run(String moduleDefinition, Properties moduleOptions,
+			ModuleDeploymentProperties deploymentProperties) {
 		deploy(descriptorFor(moduleDefinition, moduleOptions), deploymentProperties);
 	}
 
 	private ModuleDescriptor descriptorFor(String moduleDefinition, Properties options) {
 		String[] tokens = moduleDefinition.split("\\.");
-		Assert.isTrue(tokens.length == 4, "required module property format: streamname.moduletype.modulename.moduleindex");
+		Assert.isTrue(tokens.length == 4,
+				"required module property format: streamname.moduletype.modulename.moduleindex");
 		String streamName = tokens[0];
 		ModuleType moduleType = ModuleType.valueOf(tokens[1]);
 		String moduleName = tokens[2];
@@ -58,24 +67,18 @@ public class ModuleRunner {
 		ModuleDefinition definition = registry.findDefinition(moduleName, moduleType);
 
 		ModuleDescriptor.Builder builder = new ModuleDescriptor.Builder()
-				.setModuleDefinition(definition)
-				.setModuleName(moduleName)
-				.setType(moduleType)
-				.setGroup(streamName)
-				.setIndex(moduleIndex);
-		if (System.getProperties().containsKey("input")) {
-			builder.setSourceChannelName(System.getProperty("input"));
-		}
-		if (System.getProperties().containsKey("output")) {
-			builder.setSinkChannelName(System.getProperty("output"));
-		}
+				.setModuleDefinition(definition).setModuleName(moduleName)
+				.setType(moduleType).setGroup(streamName).setIndex(moduleIndex);
+		builder.setSourceChannelName(input);
+		builder.setSinkChannelName(output);
 		for (String key : options.stringPropertyNames()) {
 			builder.setParameter(key, options.getProperty(key));
 		}
 		return builder.build();
 	}
 
-	private void deploy(ModuleDescriptor descriptor, ModuleDeploymentProperties deploymentProperties) {
+	private void deploy(ModuleDescriptor descriptor,
+			ModuleDeploymentProperties deploymentProperties) {
 		Module module = deployer.createModule(descriptor, deploymentProperties);
 		deployer.deploy(module, descriptor);
 	}

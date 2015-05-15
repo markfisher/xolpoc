@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -31,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.xd.dirt.module.ModuleDeployer;
+import org.springframework.xd.dirt.module.ModuleRegistry;
 import org.springframework.xd.dirt.module.ResourceModuleRegistry;
 import org.springframework.xd.dirt.plugins.job.JobPluginMetadataResolver;
 import org.springframework.xd.dirt.plugins.stream.ModuleTypeConversionPluginMetadataResolver;
@@ -41,18 +40,25 @@ import org.springframework.xd.module.options.DelegatingModuleOptionsMetadataReso
 import org.springframework.xd.module.options.EnvironmentAwareModuleOptionsMetadataResolver;
 import org.springframework.xd.module.options.ModuleOptionsMetadataResolver;
 
+import xolpoc.core.ModuleRunner;
+
 /**
  * Instantiates the components required for loading and deploying Modules.
  *
  * @author Mark Fisher
  */
 @Configuration
-@EnableAutoConfiguration
 @EnableConfigurationProperties(DeployerProperties.class)
 public class DeployerConfiguration {
 	
 	@Autowired
-	DeployerProperties deployer;
+	private DeployerProperties deployer;
+
+	@Bean
+	public ModuleRunner moduleRunner(ModuleRegistry moduleRegistry,
+			ModuleDeployer moduleDeployer) {
+		return new ModuleRunner(moduleRegistry, moduleDeployer,deployer.getInput(), deployer.getOutput());
+	}
 
 	@Bean
 	public ModuleDeployer moduleDeployer() {
@@ -104,22 +110,6 @@ public class DeployerConfiguration {
 		DefaultModuleOptionsMetadataResolver resolver = new DefaultModuleOptionsMetadataResolver();
 		//resolver.setCompositeResolver(moduleOptionsMetadataResolver());
 		return resolver;
-	}
-
-}
-
-@ConfigurationProperties("xd")
-class DeployerProperties {
-
-	@Value("file:${XD_HOME:${xdHome:/opt/xd}}/modules")
-	private String module = "file:/opt/xd/modules";
-
-	public String getModule() {
-		return module;
-	}
-
-	public void setModule(String module) {
-		this.module = module;
 	}
 
 }

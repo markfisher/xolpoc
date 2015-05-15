@@ -24,11 +24,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.xd.dirt.module.ModuleDeployer;
-import org.springframework.xd.dirt.module.ModuleRegistry;
 import org.springframework.xd.module.ModuleDeploymentProperties;
 
 import xolpoc.config.DeployerConfiguration;
+import xolpoc.config.DeployerProperties;
 import xolpoc.config.EmptyConfiguration;
 import xolpoc.config.PluginConfiguration;
 import xolpoc.config.ServiceConfiguration;
@@ -43,10 +42,7 @@ import xolpoc.core.ModuleRunner;
 public class ModuleBootstrap implements CommandLineRunner {
 
 	@Autowired
-	private ModuleRegistry moduleRegistry;
-
-	@Autowired
-	private ModuleDeployer moduleDeployer;
+	private ModuleRunner moduleRunner;
 
 	@Value("${module}")
 	private String moduleDefinition;
@@ -58,10 +54,12 @@ public class ModuleBootstrap implements CommandLineRunner {
 	@Autowired
 	private ModuleDeploymentProperties deploymentProperties;
 
+	@Autowired
+	private DeployerProperties deployer;
+
 	@Override
 	public void run(String... args) throws Exception {
-		ModuleRunner runner = new ModuleRunner(moduleRegistry, moduleDeployer);
-		runner.run(moduleDefinition, moduleOptions, deploymentProperties);
+		moduleRunner.run(moduleDefinition, moduleOptions, deploymentProperties);
 	}
 
 	public static void main(String[] args) throws InterruptedException {
