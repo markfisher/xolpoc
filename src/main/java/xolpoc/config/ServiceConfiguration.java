@@ -17,7 +17,7 @@
 package xolpoc.config;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.cloud.config.java.AbstractCloudConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +27,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
 /**
- * Bind to services if running in a Lattice environment.
+ * Bind to services, either locally or in a Lattice environment.
  *
  * @author Mark Fisher
  */
@@ -37,7 +37,7 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 public class ServiceConfiguration {
 
 	@Configuration
-	//@ConditionalOnProperty("PROCESS_GUID")
+	@ConditionalOnExpression("'${PROCESS_GUID:}'!=''")
 	protected static class LatticeConfig extends AbstractCloudConfig {
 
 		@Bean
@@ -46,10 +46,9 @@ public class ServiceConfiguration {
 		}
 	}
 
-//	@Bean
-//	@ConditionalOnProperty(value="PROCESS_GUID", matchIfMissing=true)
-//	public RedisConnectionFactory redisConnectionFactory() {
-//		System.out.println("@@@@@@@ Binding to Redis locally");
-//		return new JedisConnectionFactory();
-//	}
+	@Bean
+	@ConditionalOnExpression("'${PROCESS_GUID:}'==''")
+	public RedisConnectionFactory redisConnectionFactory() {
+		return new JedisConnectionFactory();
+	}
 }
