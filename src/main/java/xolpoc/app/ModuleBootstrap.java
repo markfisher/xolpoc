@@ -19,22 +19,20 @@ package xolpoc.app;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.xd.dirt.integration.bus.MessageBus;
 import org.springframework.xd.dirt.module.ModuleDeployer;
 import org.springframework.xd.dirt.module.ModuleRegistry;
 import org.springframework.xd.module.ModuleDeploymentProperties;
-import org.springframework.xd.module.core.Plugin;
 
 import xolpoc.config.DeployerConfiguration;
 import xolpoc.config.EmptyConfiguration;
+import xolpoc.config.PluginConfiguration;
 import xolpoc.config.ServiceConfiguration;
 import xolpoc.core.ModuleRunner;
-import xolpoc.plugins.StreamPlugin;
 
 /**
  * Main method for running a single Module as a self-contained application.
@@ -42,45 +40,40 @@ import xolpoc.plugins.StreamPlugin;
  * @author Mark Fisher
  */
 @SpringBootApplication
-//@ImportResource({"classpath*:/META-INF/spring-xd/bus/*.xml"})
-@ImportResource({"classpath*:/META-INF/spring-xd/bus/redis-bus.xml",
-	"classpath*:/META-INF/spring-xd/bus/codec.xml"})
-public class ModuleBootstrap {
-
-	private static final String OPTION_PROPERTY_PREFIX = "option.";
-
-	private static final String DEPLOYMENT_PROPERTY_PREFIX = "property.";
+public class ModuleBootstrap implements CommandLineRunner {
 
 	@Autowired
-	private MessageBus messageBus;
+	private ModuleRegistry moduleRegistry;
 
-	public static void main(String[] args) throws InterruptedException {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder()
-				.sources(EmptyConfiguration.class) // this hierarchical depth is expected
-				.child(ServiceConfiguration.class) // so these 2 levels satisfy an assertion (temporary)
-				.child(ModuleBootstrap.class)
-				.child(DeployerConfiguration.class)
-				.properties("xd.config.home:META-INF", "module:ticktock.source.time.0")
-				.run(args);
-		String moduleDefinition = context.getEnvironment().getProperty("module");
-		ModuleRunner runner = new ModuleRunner(context.getBean(ModuleRegistry.class), context.getBean(ModuleDeployer.class));
-		Properties moduleOptions = new Properties();
-		ModuleDeploymentProperties deploymentProperties = new ModuleDeploymentProperties();
-		for (String propertyName : System.getProperties().stringPropertyNames()) {
-			if (propertyName.startsWith(OPTION_PROPERTY_PREFIX)) {
-				String key = propertyName.substring(OPTION_PROPERTY_PREFIX.length());
-				moduleOptions.setProperty(key, System.getProperty(OPTION_PROPERTY_PREFIX + key));
-			}
-			else if (propertyName.startsWith(DEPLOYMENT_PROPERTY_PREFIX)) {
-				String key = propertyName.substring(DEPLOYMENT_PROPERTY_PREFIX.length());
-				deploymentProperties.put(key, System.getProperty(DEPLOYMENT_PROPERTY_PREFIX + key));
-			}
-		}
+	@Autowired
+	private ModuleDeployer moduleDeployer;
+
+	@Value("${module}")
+	private String moduleDefinition;
+
+	@Autowired
+	@Qualifier("moduleOptions")
+	private Properties moduleOptions;
+
+	@Autowired
+	private ModuleDeploymentProperties deploymentProperties;
+
+	@Override
+	public void run(String... args) throws Exception {
+		ModuleRunner runner = new ModuleRunner(moduleRegistry, moduleDeployer);
 		runner.run(moduleDefinition, moduleOptions, deploymentProperties);
 	}
 
-	@Bean
-	public Plugin streamPlugin() {
-		return new StreamPlugin(messageBus);
+	public static void main(String[] args) throws InterruptedException {
+		// @formatter:off	
+			new SpringApplicationBuilder()
+				.sources(EmptyConfiguration.class) // this hierarchical depth is expected
+				.child(ServiceConfiguration.class) // so these 2 levels satisfy an assertion (temporary)
+				.child(PluginConfiguration.class)
+				.child(DeployerConfiguration.class, ModuleBootstrap.class)
+				.properties("xd.config.home:META-INF", "module:ticktock.source.time.0")
+			.run(args);
+		// @formatter:on
 	}
+
 }

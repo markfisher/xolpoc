@@ -18,18 +18,23 @@ package xolpoc.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.xd.dirt.module.ModuleDeployer;
 import org.springframework.xd.dirt.module.ResourceModuleRegistry;
 import org.springframework.xd.dirt.plugins.job.JobPluginMetadataResolver;
 import org.springframework.xd.dirt.plugins.stream.ModuleTypeConversionPluginMetadataResolver;
+import org.springframework.xd.module.ModuleDeploymentProperties;
 import org.springframework.xd.module.core.ModuleFactory;
 import org.springframework.xd.module.options.DefaultModuleOptionsMetadataResolver;
 import org.springframework.xd.module.options.DelegatingModuleOptionsMetadataResolver;
@@ -62,6 +67,23 @@ public class DeployerConfiguration {
 	@Bean
 	public ModuleFactory moduleFactory() {
 		return new ModuleFactory(moduleOptionsMetadataResolver());
+	}
+	
+	@Bean
+	@ConfigurationProperties("property")
+	public ModuleDeploymentProperties moduleDeploymentProperties() {
+		return new ModuleDeploymentProperties();
+	}
+
+	@Bean
+	public Properties moduleOptions(Environment environmemt) {
+		Map<String, Object> map = new RelaxedPropertyResolver(environmemt).getSubProperties("option.");
+		Properties properties = new Properties();
+		for (String key : map.keySet()) {
+			Object value = map.get(key);
+			properties.setProperty(key, value==null ? "null" : value.toString());
+		}
+		return properties;
 	}
 
 	@Bean
