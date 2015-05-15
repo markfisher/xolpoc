@@ -10,6 +10,9 @@ spring:
     pool.maxWait: -1
 
 xd:
+  modules:
+    location: file:/opt/xd/modules
+
   messagebus:
     local:
       polling:                     1000
