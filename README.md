@@ -2,6 +2,17 @@
 
 The following examples demonstrate running the *ticktock* stream (`time | log`). First, we show how to run them as standalone modules. Next, we show how to run each module as an independently scalable app (LRP) on Lattice.
 
+## Pre-requisites
+
+You need Java (8) to build this project. You also need some Spring Cloud connectors that are not yet released. To get those, you will also need Maven (3). Do this:
+
+```
+$ git clone https://github.com/spring-cloud/spring-cloud-lattice
+$ cd spring-cloud-lattice && mvn install --settings=.settings.xml
+$ git clone https://github.com/markfisher/receptor-client
+$ cd receptor-client && ./gradlew install
+```
+
 ## Running Standalone
 
 0: Start redis
