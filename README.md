@@ -4,9 +4,11 @@ The following examples demonstrate running the *ticktock* stream (`time | log`).
 
 ## Running Standalone
 
+0: Start redis
+
 1: clone this repository
 
-2: copy modules to */opt/xd/modules*:
+2: download [Spring XD](http://projects.spring.io/spring-xd/) and copy the modules to */opt/xd/modules*:
 
 ````
 opt
@@ -32,6 +34,14 @@ $ java -Dmodule=ticktock.source.time.0 -Dserver.port=8081 -jar xolpoc-0.0.1-SNAP
 ````
 
 **NOTE: at least one of the module processes needs to have an explicit `server.port` property, as shown above, to avoid conflicts on the default (8080)**
+
+See it working by watching the console in the first (sink) process, every second you see one of these:
+
+```
+...
+[2015-05-15 13:34:25.267] boot - 28094  INFO [inbound.ticktock.0-redis:queue-inbound-channel-adapter1] --- ticktock: 2015-05-15 13:34:25
+...
+```
 
 ## Running on Lattice
 
