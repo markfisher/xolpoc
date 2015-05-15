@@ -18,23 +18,29 @@ package xolpoc;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
-import xolpoc.app.ModuleBootstrap;
+import xolpoc.ModuleRunnerTests.TestConfiguration;
+import xolpoc.config.PluginConfiguration;
 
 /**
  * @author Mark Fisher
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ModuleBootstrap.class)
+@SpringApplicationConfiguration(classes = {PluginConfiguration.class, TestConfiguration.class})
 @WebAppConfiguration
 public class ModuleRunnerTests {
 
 	@Test
 	public void contextLoads() {
 	}
+	
+	@Configuration
+	@EnableAutoConfiguration
+	protected static class TestConfiguration {}
 
 }

@@ -35,6 +35,7 @@ dependencies {
 		exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
 	}
 	compile("org.springframework.boot:spring-boot-starter-log4j")
+	compile("org.springframework.boot:spring-boot-configuration-processor")
 	compile("org.springframework.xd:spring-xd-messagebus-redis:1.2.0.BUILD-SNAPSHOT")
 	compile("org.springframework.xd:spring-xd-messagebus-rabbit:1.2.0.BUILD-SNAPSHOT")
 	compile("org.springframework.xd:spring-xd-dirt:1.2.0.BUILD-SNAPSHOT") {
