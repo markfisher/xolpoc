@@ -19,7 +19,11 @@ package xolpoc.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.xd.dirt.module.ModuleDeployer;
@@ -39,9 +43,11 @@ import org.springframework.xd.module.options.ModuleOptionsMetadataResolver;
  */
 @Configuration
 @EnableAutoConfiguration
+@EnableConfigurationProperties(DeployerProperties.class)
 public class DeployerConfiguration {
-
-	private static final String MODULE_HOME = "file:/opt/xd/modules";
+	
+	@Autowired
+	DeployerProperties deployer;
 
 	@Bean
 	public ModuleDeployer moduleDeployer() {
@@ -50,7 +56,7 @@ public class DeployerConfiguration {
 
 	@Bean
 	public ResourceModuleRegistry moduleRegistry() {
-		return new ResourceModuleRegistry(MODULE_HOME);
+		return new ResourceModuleRegistry(deployer.getModule());
 	}
 
 	@Bean
@@ -76,6 +82,22 @@ public class DeployerConfiguration {
 		DefaultModuleOptionsMetadataResolver resolver = new DefaultModuleOptionsMetadataResolver();
 		//resolver.setCompositeResolver(moduleOptionsMetadataResolver());
 		return resolver;
+	}
+
+}
+
+@ConfigurationProperties("xd")
+class DeployerProperties {
+
+	@Value("file:${XD_HOME:${xdHome:/opt/xd}}/modules")
+	private String module = "file:/opt/xd/modules";
+
+	public String getModule() {
+		return module;
+	}
+
+	public void setModule(String module) {
+		this.module = module;
 	}
 
 }

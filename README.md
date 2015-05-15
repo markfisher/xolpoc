@@ -54,6 +54,8 @@ See it working by watching the console in the first (sink) process, every second
 ...
 ```
 
+> NOTE: instead of `/opt/xd` you can use a local directory, e.g. a symlink from the XD distro to the current directory, and launch the apps with `--xdHome=<pathToXD>`.
+
 ## Running on Lattice
 
 1: launch lattice with vagrant as described [here](https://github.com/cloudfoundry-incubator/lattice#launching-with-vagrant)

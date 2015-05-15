@@ -55,14 +55,14 @@ public class ModuleBootstrap {
 	private MessageBus messageBus;
 
 	public static void main(String[] args) throws InterruptedException {
-		System.setProperty("xd.config.home", "META-INF");
 		ConfigurableApplicationContext context = new SpringApplicationBuilder()
 				.sources(EmptyConfiguration.class) // this hierarchical depth is expected
 				.child(ServiceConfiguration.class) // so these 2 levels satisfy an assertion (temporary)
 				.child(ModuleBootstrap.class)
 				.child(DeployerConfiguration.class)
+				.properties("xd.config.home:META-INF", "module:ticktock.source.time.0")
 				.run(args);
-		String moduleDefinition = context.getEnvironment().getProperty("module", "ticktock.source.time.0");
+		String moduleDefinition = context.getEnvironment().getProperty("module");
 		ModuleRunner runner = new ModuleRunner(context.getBean(ModuleRegistry.class), context.getBean(ModuleDeployer.class));
 		Properties moduleOptions = new Properties();
 		ModuleDeploymentProperties deploymentProperties = new ModuleDeploymentProperties();
