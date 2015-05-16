@@ -3,9 +3,11 @@
 .idea
 .project
 .settings
-artifacts
-bin
-build
+artifacts/
+bin/
+build/
+.factorypath
 dump.rdb
 xd
 *.iml
+.apt_generated/
