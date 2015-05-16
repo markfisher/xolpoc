@@ -3,6 +3,7 @@
 .idea
 .project
 .settings
+artifacts
 bin
 build
 dump.rdb
