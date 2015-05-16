@@ -19,15 +19,22 @@ package xolpoc.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * @author Dave Syer
+ */
 @ConfigurationProperties("xd")
 public class DeployerProperties {
 
-	@Value("file:${XD_HOME:${xdHome:/opt/xd}}/modules")
-	private String moduleHome = "file:/opt/xd/modules";
-	
 	@Value("${XD_MODULE:${module:ticktock.source.time.0}}")
 	private String module;
-	
+
+	private String input = null;
+
+	private String output = null;
+
+	@Value("file:${XD_HOME:${xdHome:/opt/xd}}/modules")
+	private String moduleHome = "file:/opt/xd/modules";
+
 	public String getModule() {
 		return module;
 	}
@@ -35,10 +42,6 @@ public class DeployerProperties {
 	public void setModule(String module) {
 		this.module = module;
 	}
-
-	private String input = null;
-
-	private String output = null;
 
 	public String getInput() {
 		return input;
@@ -63,5 +66,4 @@ public class DeployerProperties {
 	public void setModuleHome(String moduleHome) {
 		this.moduleHome = moduleHome;
 	}
-
 }

@@ -57,7 +57,7 @@ public class DeployerConfiguration {
 	@Bean
 	public ModuleRunner moduleRunner(ModuleRegistry moduleRegistry,
 			ModuleDeployer moduleDeployer) {
-		return new ModuleRunner(moduleRegistry, moduleDeployer,deployer.getInput(), deployer.getOutput());
+		return new ModuleRunner(moduleRegistry, moduleDeployer, deployer.getInput(), deployer.getOutput());
 	}
 
 	@Bean
