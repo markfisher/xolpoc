@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.integration.config.EnableIntegration;
 import org.springframework.xd.dirt.integration.bus.MessageBus;
 import org.springframework.xd.module.core.Plugin;
 
@@ -31,6 +32,7 @@ import xolpoc.plugins.StreamPlugin;
  *
  */
 @Configuration
+@EnableIntegration
 @Import(PropertyPlaceholderAutoConfiguration.class)
 //@ImportResource({"classpath*:/META-INF/spring-xd/bus/*.xml"})
 @ImportResource({ "classpath*:/META-INF/spring-xd/bus/redis-bus.xml",
