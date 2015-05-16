@@ -77,8 +77,14 @@ public class DeployerConfiguration {
 	
 	@Bean
 	@ConfigurationProperties("property")
-	public ModuleDeploymentProperties moduleDeploymentProperties() {
-		return new ModuleDeploymentProperties();
+	public ModuleDeploymentProperties moduleDeploymentProperties(Environment environment) {
+		ModuleDeploymentProperties deploymentProperties = new ModuleDeploymentProperties();
+		Map<String, Object> map = new RelaxedPropertyResolver(environment).getSubProperties("property.");
+		for (String key : map.keySet()) {
+			Object value = map.get(key);
+			deploymentProperties.put(key, value==null ? "null" : value.toString());
+		}
+		return deploymentProperties;
 	}
 
 	@Bean
