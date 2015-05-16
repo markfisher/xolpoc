@@ -15,11 +15,11 @@ $ cd receptor-client && ./gradlew install
 
 ## Running Standalone
 
-0: Start redis
+1: start redis locally with `redis-server`
 
-1: clone this repository
+2: clone this repository
 
-2: download [Spring XD](http://projects.spring.io/spring-xd/) and copy the modules to */opt/xd/modules*:
+3: download [Spring XD](http://projects.spring.io/spring-xd/) and copy the modules to */opt/xd/modules*:
 
 ````
 opt
@@ -30,13 +30,13 @@ opt
         └── source
 ````
 
-3: build the jar (from the repository root):
+4: build the jar (from the repository root):
 
 ````
 ./gradlew clean build
 ````
 
-4: deploy the *ticktock* stream:
+5: deploy the *ticktock* stream:
 
 ````
 $ cd build/libs/
@@ -55,6 +55,56 @@ See it working by watching the console in the first (sink) process, every second
 ```
 
 > NOTE: instead of `/opt/xd` you can use a local directory, e.g. a symlink from the XD distro to the current directory, and launch the apps with `--xdHome=<pathToXD>`.
+
+## Running with Docker
+
+1: ensure Docker is installed and run a private registry as described [here](http://lattice.cf/docs/private-docker-registry/).
+
+2: start redis locally with `redis-server` if not already running
+
+3: clone this repository if not already cloned
+
+4: download [Spring XD](http://projects.spring.io/spring-xd/) and set $XD_HOME (should be the parent dir of the 'modules' dir).
+
+5: provide the host machine's IP address for the redis host property in `src/main/resources/application.yml` (that is necessary since 'localhost' is different for the processes that are running within the Docker containers).
+
+6: build the jar (from the repository root):
+
+````
+./gradlew clean build
+````
+
+7: build the Docker image (also from the repository root):
+
+````
+./dockerize.sh
+````
+
+8: push the Docker image to the private registry:
+
+````
+docker push 192.168.59.103:5000/xd-module
+````
+
+5: start the log sink module:
+
+````
+docker run -e "XD_MODULE=ticktock.sink.log.1" 192.168.59.103:5000/xd-module
+````
+
+6: start the time source module:
+
+````
+docker run -e "XD_MODULE=ticktock.source.time.0" 192.168.59.103:5000/xd-module
+````
+
+7: once it has fully started, in the output for the log sink module you should see the time printed each second, e.g.:
+
+```
+...
+[2015-05-16 17:46:28.856] boot - 1  INFO [inbound.ticktock.0-redis:queue-inbound-channel-adapter1] --- ticktock: 2015-05-16 17:46:24
+...
+```
 
 ## Running on Lattice
 
