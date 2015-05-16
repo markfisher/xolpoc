@@ -67,7 +67,7 @@ public class DeployerConfiguration {
 
 	@Bean
 	public ResourceModuleRegistry moduleRegistry() {
-		return new ResourceModuleRegistry(deployer.getModule());
+		return new ResourceModuleRegistry(deployer.getModuleHome());
 	}
 
 	@Bean

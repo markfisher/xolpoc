@@ -17,14 +17,14 @@
 package xolpoc.config;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
 import org.springframework.cloud.config.java.AbstractCloudConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
 /**
  * Bind to services, either locally or in a Lattice environment.
@@ -37,8 +37,8 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 public class ServiceConfiguration {
 
 	@Configuration
-	@ConditionalOnExpression("'${PROCESS_GUID:}'!=''")
-	protected static class LatticeConfig extends AbstractCloudConfig {
+	@Profile("cloud")
+	protected static class CloudConfig extends AbstractCloudConfig {
 
 		@Bean
 		RedisConnectionFactory redisConnectionFactory() {
@@ -46,9 +46,10 @@ public class ServiceConfiguration {
 		}
 	}
 
-	@Bean
-	@ConditionalOnExpression("'${PROCESS_GUID:}'==''")
-	public RedisConnectionFactory redisConnectionFactory() {
-		return new JedisConnectionFactory();
+	@Configuration
+	@Profile("!cloud") // TODO: enable this for cloud profile as well?
+	@Import(RedisAutoConfiguration.class)
+	protected static class NoCloudConfig {
 	}
+
 }

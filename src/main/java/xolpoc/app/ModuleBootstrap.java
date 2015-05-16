@@ -20,7 +20,6 @@ import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -44,9 +43,6 @@ public class ModuleBootstrap implements CommandLineRunner {
 	@Autowired
 	private ModuleRunner moduleRunner;
 
-	@Value("${module}")
-	private String moduleDefinition;
-
 	@Autowired
 	@Qualifier("moduleOptions")
 	private Properties moduleOptions;
@@ -59,7 +55,7 @@ public class ModuleBootstrap implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		moduleRunner.run(moduleDefinition, moduleOptions, deploymentProperties);
+		moduleRunner.run(deployer.getModule(), moduleOptions, deploymentProperties);
 	}
 
 	public static void main(String[] args) throws InterruptedException {
@@ -69,7 +65,7 @@ public class ModuleBootstrap implements CommandLineRunner {
 				.child(ServiceConfiguration.class) // so these 2 levels satisfy an assertion (temporary)
 				.child(PluginConfiguration.class)
 				.child(DeployerConfiguration.class, ModuleBootstrap.class)
-				.properties("xd.config.home:META-INF", "module:ticktock.source.time.0")
+				.properties("xd.config.home:META-INF")
 			.run(args);
 		// @formatter:on
 	}
