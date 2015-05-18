@@ -24,11 +24,13 @@ import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpointMetricReader;
+import org.springframework.boot.actuate.metrics.doppler.EnableDopplerMetrics;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.xd.dirt.module.ModuleDeployer;
 import org.springframework.xd.dirt.module.ModuleRegistry;
@@ -129,4 +131,10 @@ public class DeployerConfiguration {
 		return new MetricsEndpointMetricReader(metricsEndpoint);
 	}
 	
+	@Configuration
+	@EnableDopplerMetrics
+	@Profile("lattice")
+	protected static class DopplerMetricsConfiguration {
+	}
+
 }

@@ -17,6 +17,13 @@ spring:
     pool.maxActive: 8
     pool.maxWait: -1
 
+  metrics:
+    doppler:
+      host: ${DOPPLER_HOST:${CF_INSTANCE_IP:192.168.11.11}}
+      port: ${DOPPLER_PORT:3457}
+      secret: ${DOPPLER_SECRET:}
+      origin: ${XD_MODULE:${module:ticktock.source.time.0}}
+
 xd:
   messagebus:
     local:
