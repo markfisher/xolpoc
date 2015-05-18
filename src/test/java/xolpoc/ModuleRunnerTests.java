@@ -16,10 +16,8 @@
 
 package xolpoc;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +36,6 @@ import xolpoc.config.PluginConfiguration;
 public class ModuleRunnerTests {
 
 	@Test
-	@Ignore
 	public void contextLoads() {
 	}
 	
