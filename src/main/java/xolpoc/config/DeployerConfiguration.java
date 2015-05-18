@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
+import org.springframework.boot.actuate.endpoint.MetricsEndpointMetricReader;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -50,14 +52,15 @@ import xolpoc.core.ModuleRunner;
 @Configuration
 @EnableConfigurationProperties(DeployerProperties.class)
 public class DeployerConfiguration {
-	
+
 	@Autowired
 	private DeployerProperties deployer;
 
 	@Bean
 	public ModuleRunner moduleRunner(ModuleRegistry moduleRegistry,
 			ModuleDeployer moduleDeployer) {
-		return new ModuleRunner(moduleRegistry, moduleDeployer, deployer.getInput(), deployer.getOutput());
+		return new ModuleRunner(moduleRegistry, moduleDeployer, deployer.getInput(),
+				deployer.getOutput());
 	}
 
 	@Bean
@@ -74,26 +77,28 @@ public class DeployerConfiguration {
 	public ModuleFactory moduleFactory() {
 		return new ModuleFactory(moduleOptionsMetadataResolver());
 	}
-	
+
 	@Bean
 	@ConfigurationProperties("property")
 	public ModuleDeploymentProperties moduleDeploymentProperties(Environment environment) {
 		ModuleDeploymentProperties deploymentProperties = new ModuleDeploymentProperties();
-		Map<String, Object> map = new RelaxedPropertyResolver(environment).getSubProperties("property.");
+		Map<String, Object> map = new RelaxedPropertyResolver(environment)
+				.getSubProperties("property.");
 		for (String key : map.keySet()) {
 			Object value = map.get(key);
-			deploymentProperties.put(key, value==null ? "null" : value.toString());
+			deploymentProperties.put(key, value == null ? "null" : value.toString());
 		}
 		return deploymentProperties;
 	}
 
 	@Bean
 	public Properties moduleOptions(Environment environmemt) {
-		Map<String, Object> map = new RelaxedPropertyResolver(environmemt).getSubProperties("option.");
+		Map<String, Object> map = new RelaxedPropertyResolver(environmemt)
+				.getSubProperties("option.");
 		Properties properties = new Properties();
 		for (String key : map.keySet()) {
 			Object value = map.get(key);
-			properties.setProperty(key, value==null ? "null" : value.toString());
+			properties.setProperty(key, value == null ? "null" : value.toString());
 		}
 		return properties;
 	}
@@ -114,8 +119,14 @@ public class DeployerConfiguration {
 	@Bean
 	public DefaultModuleOptionsMetadataResolver defaultModuleOptionsMetadataResolver() {
 		DefaultModuleOptionsMetadataResolver resolver = new DefaultModuleOptionsMetadataResolver();
-		//resolver.setCompositeResolver(moduleOptionsMetadataResolver());
+		// resolver.setCompositeResolver(moduleOptionsMetadataResolver());
 		return resolver;
 	}
 
+	@Bean
+	public MetricsEndpointMetricReader metricsEndpointMetricReader(
+			MetricsEndpoint metricsEndpoint) {
+		return new MetricsEndpointMetricReader(metricsEndpoint);
+	}
+	
 }

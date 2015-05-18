@@ -17,12 +17,18 @@ package xolpoc.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.integration.config.EnableIntegration;
+import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.xd.dirt.integration.bus.MessageBus;
+import org.springframework.xd.dirt.plugins.AbstractPlugin;
+import org.springframework.xd.dirt.plugins.MBeanExportingPlugin;
+import org.springframework.xd.dirt.plugins.ModuleInfoPlugin;
+import org.springframework.xd.module.core.Module;
 import org.springframework.xd.module.core.Plugin;
 
 import xolpoc.plugins.StreamPlugin;
@@ -33,8 +39,9 @@ import xolpoc.plugins.StreamPlugin;
  */
 @Configuration
 @EnableIntegration
-@Import(PropertyPlaceholderAutoConfiguration.class)
-//@ImportResource({"classpath*:/META-INF/spring-xd/bus/*.xml"})
+@EnableIntegrationMBeanExport
+@Import({ PropertyPlaceholderAutoConfiguration.class, JmxAutoConfiguration.class })
+// @ImportResource({"classpath*:/META-INF/spring-xd/bus/*.xml"})
 @ImportResource({ "classpath*:/META-INF/spring-xd/bus/redis-bus.xml",
 		"classpath*:/META-INF/spring-xd/bus/codec.xml" })
 public class PluginConfiguration {
@@ -43,8 +50,35 @@ public class PluginConfiguration {
 	private MessageBus messageBus;
 
 	@Bean
-	public Plugin streamPlugin() {
+	public StreamPlugin streamPlugin() {
 		return new StreamPlugin(messageBus);
+	}
+
+	@Bean
+	public ModuleInfoPlugin moduleInfoPlugin() {
+		return new ModuleInfoPlugin();
+	}
+
+	@Bean
+	public MBeanExportingPlugin mbeanExportingPlugin() {
+		return new MBeanExportingPlugin();
+	}
+
+	@Bean
+	public Plugin metricsPlugin(MBeanExportingPlugin mbeanPlugin) {
+		return new AbstractPlugin() {
+
+			@Override
+			public boolean supports(Module module) {
+				return mbeanPlugin.supports(module);
+			}
+			
+			@Override
+			public void preProcessModule(Module module) {
+				module.addSource(IntegrationMetricsConfiguration.class);
+			}
+
+		};
 	}
 
 }

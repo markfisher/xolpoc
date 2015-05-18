@@ -18,9 +18,12 @@ package xolpoc.app;
 
 import java.util.Properties;
 
+import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.xd.module.ModuleDeploymentProperties;
@@ -41,6 +44,9 @@ import xolpoc.core.ModuleRunner;
 public class ModuleBootstrap implements CommandLineRunner {
 
 	@Autowired
+	private HierarchicalBeanFactory applicationContext;
+
+	@Autowired
 	private ModuleRunner moduleRunner;
 
 	@Autowired
@@ -53,8 +59,14 @@ public class ModuleBootstrap implements CommandLineRunner {
 	@Autowired
 	private DeployerProperties deployer;
 
+	@Autowired
+	private MetricsEndpoint metricsEndpoint;
+
 	@Override
 	public void run(String... args) throws Exception {
+		((DefaultSingletonBeanRegistry) ((HierarchicalBeanFactory) applicationContext
+				.getParentBeanFactory()).getParentBeanFactory()).registerSingleton(
+				"metricsEndpoint", metricsEndpoint);
 		moduleRunner.run(deployer.getModule(), moduleOptions, deploymentProperties);
 	}
 

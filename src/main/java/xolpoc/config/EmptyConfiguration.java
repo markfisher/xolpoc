@@ -16,7 +16,10 @@
 
 package xolpoc.config;
 
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * Temporary placeholder since a certain hierarchical depth is expected.
@@ -24,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Mark Fisher
  */
 @Configuration
+@Import({ PropertyPlaceholderAutoConfiguration.class, JmxAutoConfiguration.class })
 public class EmptyConfiguration {
 
 }

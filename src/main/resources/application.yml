@@ -1,4 +1,10 @@
 xdHome: /opt/xd
+XD_JMX_ENABLED: true
+debug:
+
+security:
+  user:
+    password: password
 
 spring:
   profiles:
