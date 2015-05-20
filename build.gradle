@@ -35,20 +35,24 @@ dependencies {
 		exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
 	}
 	compile("org.springframework.boot:spring-boot-starter-log4j")
-	compile("org.springframework.boot:spring-boot-configuration-processor")
-	compile("org.springframework.data:spring-data-redis:1.5.0.RELEASE")
-	compile("org.springframework.xd:spring-xd-spi-common:1.2.0.BUILD-SNAPSHOT")
+	compile("org.springframework.boot:spring-boot-configuration-processor") // TODO: optional
 	compile("org.springframework.xd:spring-xd-messagebus-redis:1.2.0.BUILD-SNAPSHOT")
 	compile("org.springframework.xd:spring-xd-messagebus-rabbit:1.2.0.BUILD-SNAPSHOT")
-	compile("org.springframework.xd:spring-xd-codec:1.2.0.BUILD-SNAPSHOT")
-	compile("org.springframework.integration:spring-integration-redis:4.1.4.RELEASE")
-	compile("org.springframework.xd:spring-xd-module:1.2.0.BUILD-SNAPSHOT")
-	compile("org.springframework.xd:spring-xd-module-spi:1.2.0.BUILD-SNAPSHOT")
-	compile("org.springframework.xd:spring-xd-messagebus-spi:1.2.0.BUILD-SNAPSHOT")
 	compile("org.springframework.xd:spring-xd-dirt:1.2.0.BUILD-SNAPSHOT") {
 		exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
+		exclude group: 'org.springframework.xd', module: 'spring-xd-spark-streaming'
+		exclude group: 'org.springframework.xd', module: 'spring-xd-hadoop'
+		exclude group: 'org.springframework.xd', module: 'spring-xd-batch'
+		exclude group: 'org.springframework.batch', module: 'spring-batch-admin-manager'
+		exclude group: 'org.springframework.xd', module: 'spring-xd-ui'
+		exclude group: 'org.springframework', module: 'spring-jdbc'
+		// TODO: exclude group: 'org.apache.curator', module: 'curator-recipes'
+		exclude group: 'org.apache.zookeeper', module: 'zookeeper'
+		exclude group: 'org.springframework.data', module: 'spring-data-mongodb'
+		exclude group: 'org.springframework.security', module: 'spring-security-ldap'
+		exclude group: 'org.postgresql', module: 'postgresql'
+		exclude group: 'mysql', module: 'mysql-connector-java'
 	}
-	compile("org.springframework.cloud:spring-cloud-spring-service-connector:1.1.2.BUILD-SNAPSHOT")
 	compile("org.springframework.cloud:spring-cloud-lattice-core:1.0.2.BUILD-SNAPSHOT")
 	compile("org.springframework.cloud:spring-cloud-lattice-connector:1.0.2.BUILD-SNAPSHOT")
 	testCompile("org.springframework.boot:spring-boot-starter-test")
