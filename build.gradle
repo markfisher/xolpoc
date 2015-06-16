@@ -39,19 +39,12 @@ dependencies {
 	compile("org.springframework.boot:spring-boot-starter-web") {
 		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
 		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-		exclude group: 'ch.qos.logback', module: 'logback-classic'
-		exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
 	}
-	compile("org.springframework.boot:spring-boot-metrics-doppler:1.0.0.BUILD-SNAPSHOT") {
-		exclude group: 'ch.qos.logback', module: 'logback-classic'
-		exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
-	}
-	compile("org.springframework.boot:spring-boot-starter-log4j")
+	compile("org.springframework.boot:spring-boot-metrics-doppler:1.0.0.BUILD-SNAPSHOT")
 	runtime("org.springframework.boot:spring-boot-configuration-processor")
 	compile("org.springframework.xd:spring-xd-messagebus-redis:1.2.0.BUILD-SNAPSHOT")
 	compile("org.springframework.xd:spring-xd-messagebus-rabbit:1.2.0.BUILD-SNAPSHOT")
 	compile("org.springframework.xd:spring-xd-dirt:1.2.0.BUILD-SNAPSHOT") {
-		exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
 		exclude group: 'org.springframework.xd', module: 'spring-xd-spark-streaming'
 		exclude group: 'org.springframework.xd', module: 'spring-xd-hadoop'
 		exclude group: 'org.springframework.xd', module: 'spring-xd-batch'
